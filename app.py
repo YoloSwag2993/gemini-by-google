@@ -1,22 +1,23 @@
-import os
 from flask import Flask,render_template,request
-import google.generativeai as palm
+import google.generativeai as genai
 
-api_key = os.getenv("MAKERSUITE_API_TOKEN")
-palm.configure(api_key=api_key)
+genai.configure(api_key="AIzaSyD3xCtrHtzi61l9XMA4I9BiPlGXpXzp_5Q",)
 
-defaults = { 'model': "models/text-bison-001"}
+model = genai.GenerativeModel("gemini-pro")
 
 app = Flask(__name__)
 
-@app.route("/",methods=["GET","POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         t = request.form.get("txt")
-        r = palm.generate_text(**defaults,messages=t)
-        return(render_template("index.html",result=r.last))
+        try:
+            response = model.generate_content(t)
+            return render_template("index.html", result=response.text)
+        except Exception as e:
+            return render_template("index.html", result=f"Error: {str(e)}")
     else:
-        return(render_template("index.html",result="waiting"))
+        return render_template("index.html", result="waiting")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
