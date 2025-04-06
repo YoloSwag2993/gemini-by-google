@@ -13,7 +13,7 @@ app = Flask(__name__)
 def index():
     if request.method == "POST":
         t = request.form.get("txt")
-        r = palm.generate_text(**defaults,prompt=t)
+        r = palm.generate_text(**defaults,messages=t)
         return(render_template("index.html",result=r.last))
     else:
         return(render_template("index.html",result="waiting"))
